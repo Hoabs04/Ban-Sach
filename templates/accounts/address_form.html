@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <div class="max-w-lg mx-auto">
+        <h1 class="section-title mb-8">{{ title }}</h1>
+        <div class="card p-6">
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-4">
+                    {% if field.field.widget.input_type == 'checkbox' %}
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="{{ field.html_name }}" {% if field.value %}checked{% endif %}
+                               class="w-4 h-4 text-primary-600 rounded">
+                        <span class="text-sm text-surface-700">{{ field.label }}</span>
+                    </label>
+                    {% else %}
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="text" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
+                           value="{{ field.value|default:'' }}" class="form-input"
+                           {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
+                    {% endif %}
+                    {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="btn-primary">{% trans "Lưu" %}</button>
+                    <a href="{% url 'accounts:address_list' %}" class="btn-secondary">{% trans "Hủy" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

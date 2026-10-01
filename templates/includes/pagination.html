@@ -1,0 +1,48 @@
+{% load i18n %}
+{# Pagination component. Usage: {% include 'includes/pagination.html' with page_obj=books %} #}
+
+{% if page_obj.has_other_pages %}
+<nav class="flex justify-center mt-10" aria-label="Pagination">
+    <ul class="flex items-center gap-1">
+        {% if page_obj.has_previous %}
+        <li>
+            <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               class="flex items-center justify-center w-10 h-10 rounded-lg border border-surface-200 text-surface-600
+                      hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600 transition-all">
+                <i class="fas fa-chevron-left text-xs"></i>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li>
+                <span class="flex items-center justify-center w-10 h-10 rounded-lg bg-primary-600 text-white font-medium text-sm">
+                    {{ num }}
+                </span>
+            </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li>
+                <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+                   class="flex items-center justify-center w-10 h-10 rounded-lg border border-surface-200 text-surface-600
+                          hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600 transition-all text-sm">
+                    {{ num }}
+                </a>
+            </li>
+            {% elif num == page_obj.number|add:'-3' or num == page_obj.number|add:'3' %}
+            <li><span class="px-1 text-surface-400">…</span></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li>
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"
+               class="flex items-center justify-center w-10 h-10 rounded-lg border border-surface-200 text-surface-600
+                      hover:bg-primary-50 hover:border-primary-300 hover:text-primary-600 transition-all">
+                <i class="fas fa-chevron-right text-xs"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}

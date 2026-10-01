@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Tất cả sách" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600 transition-colors">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700">{% trans "Tất cả sách" %}</span>
+    </nav>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Sidebar Filters -->
+        <aside class="lg:w-64 flex-shrink-0">
+            <div class="lg:sticky lg:top-28 space-y-6">
+                <!-- Categories -->
+                <div class="card p-5">
+                    <h3 class="font-display font-semibold text-surface-800 mb-3">
+                        <i class="fas fa-layer-group text-primary-500 mr-2"></i>{% trans "Danh mục" %}
+                    </h3>
+                    <ul class="space-y-1">
+                        <li>
+                            <a href="{% url 'catalog:book_list' %}"
+                               class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors
+                                      {% if not current_category %}bg-primary-50 text-primary-600 font-medium{% else %}text-surface-600 hover:bg-surface-50{% endif %}">
+                                {% trans "Tất cả" %}
+                            </a>
+                        </li>
+                        {% for cat in categories %}
+                        <li>
+                            <a href="?category={{ cat.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                               class="flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors
+                                      {% if current_category == cat.slug %}bg-primary-50 text-primary-600 font-medium{% else %}text-surface-600 hover:bg-surface-50{% endif %}">
+                                {{ cat.name }}
+                                <span class="text-xs text-surface-400">{{ cat.active_books }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Price Filter -->
+                <div class="card p-5">
+                    <h3 class="font-display font-semibold text-surface-800 mb-3">
+                        <i class="fas fa-tag text-primary-500 mr-2"></i>{% trans "Khoảng giá" %}
+                    </h3>
+                    <form method="GET" action="" class="space-y-3">
+                        {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+                        {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
+                        <div class="flex gap-2">
+                            <input type="number" name="min_price" placeholder="{% trans 'Từ' %}" value="{{ request.GET.min_price }}"
+                                   class="form-input text-sm py-2">
+                            <span class="text-surface-400 self-center">-</span>
+                            <input type="number" name="max_price" placeholder="{% trans 'Đến' %}" value="{{ request.GET.max_price }}"
+                                   class="form-input text-sm py-2">
+                        </div>
+                        <button type="submit" class="btn-primary w-full btn-sm">{% trans "Áp dụng" %}</button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Book Grid -->
+        <div class="flex-1">
+            <!-- Sort Bar -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                <p class="text-sm text-surface-500">
+                    {% trans "Hiển thị" %} <span class="font-medium text-surface-800">{{ books.paginator.count }}</span> {% trans "sách" %}
+                </p>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-surface-500">{% trans "Sắp xếp:" %}</span>
+                    <div class="flex flex-wrap gap-1.5">
+                        <a href="?sort=newest{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                                  {% if current_sort == 'newest' %}bg-primary-600 text-white{% else %}bg-surface-100 text-surface-600 hover:bg-surface-200{% endif %}">
+                            {% trans "Mới nhất" %}
+                        </a>
+                        <a href="?sort=bestseller{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                                  {% if current_sort == 'bestseller' %}bg-primary-600 text-white{% else %}bg-surface-100 text-surface-600 hover:bg-surface-200{% endif %}">
+                            {% trans "Bán chạy" %}
+                        </a>
+                        <a href="?sort=price_asc{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                                  {% if current_sort == 'price_asc' %}bg-primary-600 text-white{% else %}bg-surface-100 text-surface-600 hover:bg-surface-200{% endif %}">
+                            {% trans "Giá tăng" %}
+                        </a>
+                        <a href="?sort=price_desc{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                                  {% if current_sort == 'price_desc' %}bg-primary-600 text-white{% else %}bg-surface-100 text-surface-600 hover:bg-surface-200{% endif %}">
+                            {% trans "Giá giảm" %}
+                        </a>
+                        <a href="?sort=name{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="px-3 py-1 rounded-full text-xs font-medium transition-all
+                                  {% if current_sort == 'name' %}bg-primary-600 text-white{% else %}bg-surface-100 text-surface-600 hover:bg-surface-200{% endif %}">
+                            {% trans "Tên A-Z" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            {% if books %}
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {% for book in books %}
+                    {% include 'includes/book_card.html' with book=book %}
+                {% endfor %}
+            </div>
+
+            {% include 'includes/pagination.html' with page_obj=books %}
+            {% else %}
+            <div class="text-center py-16">
+                <i class="fas fa-search text-5xl text-surface-300 mb-4"></i>
+                <h3 class="font-display text-xl font-semibold text-surface-600 mb-2">{% trans "Không tìm thấy sách nào" %}</h3>
+                <p class="text-surface-400 mb-6">{% trans "Thử thay đổi bộ lọc hoặc tìm kiếm khác." %}</p>
+                <a href="{% url 'catalog:book_list' %}" class="btn-primary">{% trans "Xem tất cả sách" %}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Custom template filter replacement for split
+document.addEventListener('DOMContentLoaded', function() {
+    // Sort buttons are rendered statically, no JS needed
+});
+</script>
+{% endblock %}

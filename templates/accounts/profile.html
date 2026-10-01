@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Tài khoản" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <h1 class="section-title mb-8"><i class="fas fa-user-circle text-primary-500 mr-2"></i>{% trans "Tài khoản của tôi" %}</h1>
+
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="card p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center">
+                    {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="w-16 h-16 rounded-full object-cover">
+                    {% else %}
+                    <i class="fas fa-user text-2xl text-primary-500"></i>
+                    {% endif %}
+                </div>
+                <div>
+                    <h2 class="font-display font-semibold text-surface-800">{{ user.get_full_name|default:user.username }}</h2>
+                    <p class="text-sm text-surface-400">{{ user.email }}</p>
+                </div>
+            </div>
+            <a href="{% url 'accounts:profile_edit' %}" class="btn-secondary w-full btn-sm">
+                <i class="fas fa-edit mr-2"></i>{% trans "Chỉnh sửa" %}
+            </a>
+        </div>
+
+        <a href="{% url 'accounts:my_orders' %}" class="card p-6 hover:border-primary-300 transition-colors group">
+            <i class="fas fa-box text-3xl text-primary-400 mb-3 group-hover:text-primary-600"></i>
+            <h3 class="font-semibold text-surface-800">{% trans "Đơn hàng" %}</h3>
+            <p class="text-sm text-surface-400 mt-1">{% trans "Xem và theo dõi đơn hàng" %}</p>
+        </a>
+
+        <a href="{% url 'accounts:address_list' %}" class="card p-6 hover:border-primary-300 transition-colors group">
+            <i class="fas fa-map-marker-alt text-3xl text-primary-400 mb-3 group-hover:text-primary-600"></i>
+            <h3 class="font-semibold text-surface-800">{% trans "Địa chỉ" %}</h3>
+            <p class="text-sm text-surface-400 mt-1">{% trans "Quản lý địa chỉ giao hàng" %}</p>
+        </a>
+    </div>
+</div>
+{% endblock %}

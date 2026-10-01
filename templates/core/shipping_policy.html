@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Chính sách giao hàng" %}{% endblock %}
+{% block content %}
+<div class="container-custom py-12"><div class="max-w-3xl mx-auto card p-8">
+    <h1 class="section-title mb-6">{% trans "Chính sách giao hàng" %}</h1>
+    <div class="prose prose-surface max-w-none text-surface-600 space-y-4">
+        <h3 class="font-semibold text-surface-800">{% trans "Phí vận chuyển" %}</h3>
+        <ul><li>{% trans "Miễn phí giao hàng cho đơn hàng từ 300.000₫" %}</li>
+            <li>{% trans "Phí giao hàng cố định 30.000₫ cho đơn dưới 300.000₫" %}</li></ul>
+        <h3 class="font-semibold text-surface-800">{% trans "Thời gian giao hàng" %}</h3>
+        <ul><li>{% trans "Nội thành TP.HCM, Hà Nội: 1-2 ngày" %}</li>
+            <li>{% trans "Các tỉnh thành khác: 3-5 ngày" %}</li>
+            <li>{% trans "Vùng sâu vùng xa: 5-7 ngày" %}</li></ul>
+        <h3 class="font-semibold text-surface-800">{% trans "Đối tác vận chuyển" %}</h3>
+        <p>{% trans "Chúng tôi hợp tác với các đơn vị vận chuyển uy tín: Giao Hàng Nhanh, Giao Hàng Tiết Kiệm, Viettel Post." %}</p>
+    </div>
+</div></div>
+{% endblock %}

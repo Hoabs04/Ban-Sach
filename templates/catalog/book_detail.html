@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{{ book.title }}{% endblock %}
+{% block meta_description %}{{ book.short_description|default:book.description|truncatewords:30 }}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6 flex-wrap">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600 transition-colors">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'catalog:book_list' %}" class="hover:text-primary-600 transition-colors">{% trans "Sách" %}</a>
+        {% for cat in book.categories.all|slice:":1" %}
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'catalog:category_detail' slug=cat.slug %}" class="hover:text-primary-600 transition-colors">{{ cat.name }}</a>
+        {% endfor %}
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700 truncate max-w-xs">{{ book.title }}</span>
+    </nav>
+
+    <!-- Product Detail -->
+    <div class="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <!-- Images -->
+        <div class="space-y-4">
+            <div class="card overflow-hidden">
+                {% if book.cover_image %}
+                <img id="main-book-image" src="{{ book.cover_image.url }}" alt="{{ book.title }}"
+                     class="w-full max-h-[500px] object-contain p-4">
+                {% else %}
+                <div class="w-full h-96 bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center">
+                    <i class="fas fa-book text-6xl text-primary-300"></i>
+                </div>
+                {% endif %}
+            </div>
+            {% if book.images.all %}
+            <div class="flex gap-2 overflow-x-auto pb-2">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}"
+                     class="book-thumb w-16 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent
+                            hover:border-primary-400 transition-colors ring-2 ring-primary-500"
+                     data-src="{{ book.cover_image.url }}">
+                {% endif %}
+                {% for img in book.images.all %}
+                <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:book.title }}"
+                     class="book-thumb w-16 h-20 object-cover rounded-lg cursor-pointer border-2 border-transparent
+                            hover:border-primary-400 transition-colors"
+                     data-src="{{ img.image.url }}">
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="space-y-6">
+            <!-- Title & Author -->
+            <div>
+                {% for cat in book.categories.all|slice:":2" %}
+                <a href="{% url 'catalog:category_detail' slug=cat.slug %}"
+                   class="badge-primary mb-2 mr-1">{{ cat.name }}</a>
+                {% endfor %}
+                <h1 class="font-display text-2xl md:text-3xl font-bold text-surface-900 mt-2">{{ book.title }}</h1>
+                {% if book.authors_display %}
+                <p class="text-surface-500 mt-2">
+                    {% trans "Tác giả:" %}
+                    {% for author in book.authors.all %}
+                    <a href="{% url 'catalog:author_detail' slug=author.slug %}"
+                       class="text-primary-600 hover:underline">{{ author.name }}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Rating -->
+            {% if book.review_count %}
+            <div class="flex items-center gap-3">
+                <div class="star-rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= book.average_rating %}
+                        <i class="fas fa-star star-filled"></i>
+                        {% else %}
+                        <i class="fas fa-star star-empty"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="text-sm text-surface-500">{{ book.average_rating }}/5 ({{ book.review_count }} {% trans "đánh giá" %})</span>
+            </div>
+            {% endif %}
+
+            <!-- Price -->
+            <div class="bg-surface-50 rounded-xl p-5">
+                <div class="flex items-end gap-3">
+                    <span class="text-3xl font-bold text-accent-600">{{ book.price|intcomma }}₫</span>
+                    {% if book.original_price and book.original_price > book.price %}
+                    <span class="text-lg text-surface-400 line-through">{{ book.original_price|intcomma }}₫</span>
+                    <span class="badge-discount text-sm">-{{ book.discount_percent }}%</span>
+                    {% endif %}
+                </div>
+                {% if book.price >= 300000 %}
+                <p class="text-sm text-emerald-600 mt-2">
+                    <i class="fas fa-truck mr-1"></i> {% trans "Miễn phí vận chuyển" %}
+                </p>
+                {% endif %}
+            </div>
+
+            <!-- Stock & Add to Cart -->
+            <div>
+                {% if book.is_in_stock %}
+                <div class="flex items-center gap-2 text-sm mb-4">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span class="text-emerald-600">{% trans "Còn hàng" %} ({{ book.stock }} {% trans "sản phẩm" %})</span>
+                </div>
+                <form method="post" action="{% url 'cart:cart_add' book.pk %}" class="flex flex-col sm:flex-row gap-3">
+                    {% csrf_token %}
+                    <div class="qty-control flex items-center border border-surface-300 rounded-lg overflow-hidden">
+                        <button type="button" class="qty-minus px-4 py-3 text-surface-500 hover:bg-surface-100 transition-colors">
+                            <i class="fas fa-minus text-xs"></i>
+                        </button>
+                        <input type="number" name="quantity" value="1" min="1" max="{{ book.stock }}"
+                               class="w-16 text-center border-x border-surface-300 py-3 text-sm font-medium
+                                      focus:outline-none">
+                        <button type="button" class="qty-plus px-4 py-3 text-surface-500 hover:bg-surface-100 transition-colors">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="btn-primary btn-lg flex-1">
+                        <i class="fas fa-cart-plus mr-2"></i> {% trans "Thêm vào giỏ hàng" %}
+                    </button>
+                </form>
+                {% else %}
+                <div class="flex items-center gap-2 text-sm mb-4">
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span class="text-red-600">{% trans "Hết hàng" %}</span>
+                </div>
+                <button disabled class="btn bg-surface-200 text-surface-400 btn-lg w-full cursor-not-allowed">
+                    <i class="fas fa-times-circle mr-2"></i> {% trans "Tạm hết hàng" %}
+                </button>
+                {% endif %}
+            </div>
+
+            <!-- Details Table -->
+            <div class="border-t border-surface-200 pt-6">
+                <h3 class="font-display font-semibold text-surface-800 mb-3">{% trans "Thông tin chi tiết" %}</h3>
+                <table class="w-full text-sm">
+                    <tbody>
+                        {% if book.publisher %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500 w-40">{% trans "Nhà xuất bản" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.publisher.name }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if book.isbn %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">ISBN</td>
+                            <td class="py-2.5 text-surface-800">{{ book.isbn }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if book.pages %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">{% trans "Số trang" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.pages }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if book.publication_year %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">{% trans "Năm xuất bản" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.publication_year }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">{% trans "Định dạng" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.get_format_display }}</td>
+                        </tr>
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">{% trans "Ngôn ngữ" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.language }}</td>
+                        </tr>
+                        {% if book.weight %}
+                        <tr class="border-b border-surface-100">
+                            <td class="py-2.5 text-surface-500">{% trans "Trọng lượng" %}</td>
+                            <td class="py-2.5 text-surface-800">{{ book.weight }}g</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Description -->
+    {% if book.description %}
+    <div class="mt-12 card p-6 md:p-8">
+        <h2 class="font-display text-xl font-bold text-surface-900 mb-4">{% trans "Mô tả sách" %}</h2>
+        <div class="prose prose-surface max-w-none text-surface-600 leading-relaxed">
+            {{ book.description|linebreaks }}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Reviews -->
+    <div class="mt-12" id="reviews">
+        <h2 class="section-title mb-6">
+            <i class="fas fa-star text-amber-400 mr-2"></i>
+            {% trans "Đánh giá" %} ({{ reviews.count }})
+        </h2>
+
+        {% if user.is_authenticated and not user_review %}
+        <!-- Write Review Form -->
+        <div class="card p-6 mb-8">
+            <h3 class="font-medium text-surface-800 mb-4">{% trans "Viết đánh giá của bạn" %}</h3>
+            <form method="post" action="{% url 'catalog:add_review' slug=book.slug %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label">{% trans "Đánh giá" %}</label>
+                    <div class="flex gap-2">
+                        {% for i in "12345" %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="rating" value="{{ forloop.counter }}" class="hidden peer" {% if forloop.counter == 5 %}checked{% endif %}>
+                            <i class="fas fa-star text-2xl text-surface-300 peer-checked:text-amber-400 hover:text-amber-400 transition-colors"></i>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" for="review-title">{% trans "Tiêu đề" %}</label>
+                    <input type="text" name="title" id="review-title" class="form-input"
+                           placeholder="{% trans 'Tóm tắt đánh giá của bạn' %}">
+                </div>
+                <div class="mb-4">
+                    <label class="form-label" for="review-comment">{% trans "Nhận xét" %}</label>
+                    <textarea name="comment" id="review-comment" rows="4" class="form-input" required
+                              placeholder="{% trans 'Chia sẻ cảm nhận của bạn về cuốn sách này...' %}"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane mr-2"></i> {% trans "Gửi đánh giá" %}
+                </button>
+            </form>
+        </div>
+        {% elif not user.is_authenticated %}
+        <div class="card p-6 mb-8 text-center">
+            <p class="text-surface-500">
+                <a href="{% url 'account_login' %}?next={{ request.path }}%23reviews" class="text-primary-600 hover:underline">
+                    {% trans "Đăng nhập" %}
+                </a> {% trans "để viết đánh giá" %}
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Reviews List -->
+        {% if reviews %}
+        <div class="space-y-4">
+            {% for review in reviews %}
+            <div class="card p-5">
+                <div class="flex items-start justify-between mb-2">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center">
+                                <span class="text-primary-600 text-sm font-medium">{{ review.user.username|first|upper }}</span>
+                            </div>
+                            <span class="font-medium text-sm text-surface-800">{{ review.user.get_full_name|default:review.user.username }}</span>
+                        </div>
+                    </div>
+                    <span class="text-xs text-surface-400">{{ review.created_at|date:"d/m/Y" }}</span>
+                </div>
+                <div class="star-rating mb-2">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                        <i class="fas fa-star star-filled text-sm"></i>
+                        {% else %}
+                        <i class="fas fa-star star-empty text-sm"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% if review.title %}
+                <p class="font-medium text-surface-800 mb-1">{{ review.title }}</p>
+                {% endif %}
+                <p class="text-sm text-surface-600">{{ review.comment }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-8 text-surface-400">
+            <i class="fas fa-comment-dots text-3xl mb-2"></i>
+            <p>{% trans "Chưa có đánh giá nào. Hãy là người đầu tiên!" %}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Related Books -->
+    {% if related_books %}
+    <div class="mt-12">
+        <h2 class="section-title mb-6">{% trans "Sách liên quan" %}</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+            {% for book in related_books %}
+                {% include 'includes/book_card.html' with book=book %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

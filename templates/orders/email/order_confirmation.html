@@ -1,0 +1,20 @@
+<h2>Cảm ơn bạn đã đặt hàng, {{ order.shipping_name }}!</h2>
+<p>Đơn hàng <strong>#{{ order.order_number }}</strong> của bạn đã được tiếp nhận và đang trong quá trình xử lý.</p>
+<p><strong>Chi tiết đơn hàng:</strong></p>
+<ul>
+{% for item in order.items.all %}
+  <li>{{ item.book_title }} - {{ item.quantity }} x {{ item.book_price|floatformat:0 }}đ</li>
+{% endfor %}
+</ul>
+<p>Tạm tính: {{ order.subtotal|floatformat:0 }}đ</p>
+<p>Phí vận chuyển: {{ order.shipping_fee|floatformat:0 }}đ</p>
+{% if order.discount_amount %}
+<p>Giảm giá: -{{ order.discount_amount|floatformat:0 }}đ</p>
+{% endif %}
+<h3>Tổng cộng: {{ order.total|floatformat:0 }}đ</h3>
+<p>Phương thức thanh toán: {{ order.get_payment_method_display }}</p>
+<p>Chúng tôi sẽ sớm giao hàng đến địa chỉ:</p>
+<p>{{ order.shipping_address }}, {{ order.shipping_ward }}, {{ order.shipping_district }}, {{ order.shipping_city }}</p>
+<br>
+<p>Nếu có thắc mắc, vui lòng liên hệ với chúng tôi.</p>
+<p>Trân trọng,<br>Bookstore Team</p>

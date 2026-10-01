@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Đặt hàng thành công" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-12">
+    <div class="max-w-2xl mx-auto text-center">
+        <div class="w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-6 animate-bounce-gentle">
+            <i class="fas fa-check text-3xl text-emerald-600"></i>
+        </div>
+        <h1 class="font-display text-3xl font-bold text-surface-900 mb-3">{% trans "Đặt hàng thành công!" %}</h1>
+        <p class="text-surface-500 mb-8">{% trans "Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đang được xử lý." %}</p>
+
+        <div class="card p-6 text-left mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-display font-semibold text-surface-800">{% trans "Đơn hàng" %} #{{ order.order_number }}</h2>
+                <span class="badge-warning">{{ order.get_status_display }}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                <div>
+                    <p class="text-surface-400">{% trans "Người nhận" %}</p>
+                    <p class="font-medium text-surface-800">{{ order.shipping_name }}</p>
+                </div>
+                <div>
+                    <p class="text-surface-400">{% trans "Số điện thoại" %}</p>
+                    <p class="font-medium text-surface-800">{{ order.shipping_phone }}</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-surface-400">{% trans "Địa chỉ" %}</p>
+                    <p class="font-medium text-surface-800">{{ order.full_shipping_address }}</p>
+                </div>
+                <div>
+                    <p class="text-surface-400">{% trans "Thanh toán" %}</p>
+                    <p class="font-medium text-surface-800">{{ order.get_payment_method_display }}</p>
+                </div>
+                <div>
+                    <p class="text-surface-400">{% trans "Tổng tiền" %}</p>
+                    <p class="font-bold text-accent-600 text-lg">{{ order.total|intcomma }}₫</p>
+                </div>
+            </div>
+
+            {% if order.payment_method == 'bank_transfer' %}
+            <div class="bg-blue-50 p-4 rounded-lg text-sm">
+                <h3 class="font-semibold text-blue-800 mb-2">{% trans "Thông tin chuyển khoản" %}</h3>
+                <p class="text-blue-700">{% trans "Ngân hàng:" %} <b>Vietcombank</b></p>
+                <p class="text-blue-700">{% trans "Số TK:" %} <b>1234567890</b></p>
+                <p class="text-blue-700">{% trans "Chủ TK:" %} <b>CONG TY BOOKSTORE</b></p>
+                <p class="text-blue-700">{% trans "Nội dung CK:" %} <b>{{ order.order_number }}</b></p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="btn-primary">
+                <i class="fas fa-eye mr-2"></i> {% trans "Xem chi tiết đơn hàng" %}
+            </a>
+            <a href="{% url 'catalog:book_list' %}" class="btn-secondary">
+                {% trans "Tiếp tục mua sắm" %}
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

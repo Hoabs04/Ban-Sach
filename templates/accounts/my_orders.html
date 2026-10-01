@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load i18n humanize %}
+
+{% block title %}{% trans "Đơn hàng của tôi" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <h1 class="section-title mb-8"><i class="fas fa-box text-primary-500 mr-2"></i>{% trans "Đơn hàng của tôi" %}</h1>
+
+    {% if orders %}
+    <div class="space-y-4">
+        {% for order in orders %}
+        <a href="{% url 'orders:order_detail' order_number=order.order_number %}" class="card p-5 block hover:border-primary-300 transition-colors">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-3">
+                    <span class="font-semibold text-surface-800">#{{ order.order_number }}</span>
+                    <span class="badge-{% if order.status == 'delivered' %}success{% elif order.status == 'cancelled' %}danger{% elif order.status == 'shipping' %}primary{% else %}warning{% endif %}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+                <span class="text-sm text-surface-400">{{ order.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="text-sm text-surface-500">{{ order.items.count }} {% trans "sản phẩm" %}</span>
+                <span class="font-bold text-accent-600">{{ order.total|intcomma }}₫</span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 text-surface-400">
+        <i class="fas fa-box-open text-4xl mb-3"></i>
+        <p>{% trans "Bạn chưa có đơn hàng nào." %}</p>
+        <a href="{% url 'catalog:book_list' %}" class="btn-primary mt-4">{% trans "Mua sắm ngay" %}</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

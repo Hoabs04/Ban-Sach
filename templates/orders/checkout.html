@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Thanh toán" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'cart:cart_detail' %}" class="hover:text-primary-600">{% trans "Giỏ hàng" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700">{% trans "Thanh toán" %}</span>
+    </nav>
+
+    <h1 class="section-title mb-8">
+        <i class="fas fa-credit-card text-primary-500 mr-2"></i>{% trans "Thanh toán" %}
+    </h1>
+
+    <form method="post" class="flex flex-col lg:flex-row gap-8">
+        {% csrf_token %}
+
+        <!-- Left: Address & Payment -->
+        <div class="flex-1 space-y-6">
+            <!-- Shipping Address -->
+            <div class="card p-6">
+                <h2 class="font-display font-semibold text-surface-800 mb-4">
+                    <i class="fas fa-map-marker-alt text-primary-500 mr-2"></i>{% trans "Địa chỉ giao hàng" %}
+                </h2>
+
+                {% if form.saved_address.field.queryset.count %}
+                <div class="mb-4">
+                    <label class="form-label">{{ form.saved_address.label }}</label>
+                    <select name="saved_address" class="form-input" id="saved-address-select">
+                        <option value="">{% trans "— Nhập địa chỉ mới —" %}</option>
+                        {% for addr in form.saved_address.field.queryset %}
+                        <option value="{{ addr.pk }}" {% if form.saved_address.value|stringformat:"s" == addr.pk|stringformat:"s" %}selected{% endif %}>
+                            {{ addr }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {% endif %}
+
+                <div id="new-address-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">{{ form.shipping_name.label }} *</label>
+                        <input type="text" name="shipping_name" value="{{ form.shipping_name.value|default:'' }}"
+                               class="form-input" placeholder="Nguyễn Văn A">
+                        {% if form.shipping_name.errors %}<p class="form-error">{{ form.shipping_name.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="form-label">{{ form.shipping_phone.label }} *</label>
+                        <input type="text" name="shipping_phone" value="{{ form.shipping_phone.value|default:'' }}"
+                               class="form-input" placeholder="0123 456 789">
+                        {% if form.shipping_phone.errors %}<p class="form-error">{{ form.shipping_phone.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="form-label">{{ form.shipping_address.label }} *</label>
+                        <input type="text" name="shipping_address" value="{{ form.shipping_address.value|default:'' }}"
+                               class="form-input" placeholder="Số nhà, tên đường">
+                        {% if form.shipping_address.errors %}<p class="form-error">{{ form.shipping_address.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="form-label">{{ form.shipping_ward.label }}</label>
+                        <input type="text" name="shipping_ward" value="{{ form.shipping_ward.value|default:'' }}"
+                               class="form-input" placeholder="Phường/Xã">
+                    </div>
+                    <div>
+                        <label class="form-label">{{ form.shipping_district.label }} *</label>
+                        <input type="text" name="shipping_district" value="{{ form.shipping_district.value|default:'' }}"
+                               class="form-input" placeholder="Quận/Huyện">
+                        {% if form.shipping_district.errors %}<p class="form-error">{{ form.shipping_district.errors.0 }}</p>{% endif %}
+                    </div>
+                    <div>
+                        <label class="form-label">{{ form.shipping_city.label }} *</label>
+                        <input type="text" name="shipping_city" value="{{ form.shipping_city.value|default:'' }}"
+                               class="form-input" placeholder="Tỉnh/Thành phố">
+                        {% if form.shipping_city.errors %}<p class="form-error">{{ form.shipping_city.errors.0 }}</p>{% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="card p-6">
+                <h2 class="font-display font-semibold text-surface-800 mb-4">
+                    <i class="fas fa-wallet text-primary-500 mr-2"></i>{% trans "Phương thức thanh toán" %}
+                </h2>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-3 p-4 rounded-lg border border-surface-200 cursor-pointer
+                                  has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-all">
+                        <input type="radio" name="payment_method" value="cod" checked
+                               class="w-4 h-4 text-primary-600">
+                        <div class="flex-1">
+                            <span class="font-medium text-surface-800">{% trans "Thanh toán khi nhận hàng (COD)" %}</span>
+                            <p class="text-xs text-surface-400 mt-0.5">{% trans "Thanh toán bằng tiền mặt khi nhận được hàng" %}</p>
+                        </div>
+                        <i class="fas fa-money-bill-wave text-emerald-500 text-lg"></i>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 rounded-lg border border-surface-200 cursor-pointer
+                                  has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-all">
+                        <input type="radio" name="payment_method" value="bank_transfer"
+                               class="w-4 h-4 text-primary-600">
+                        <div class="flex-1">
+                            <span class="font-medium text-surface-800">{% trans "Chuyển khoản ngân hàng" %}</span>
+                            <p class="text-xs text-surface-400 mt-0.5">{% trans "Chuyển khoản trước khi giao hàng" %}</p>
+                        </div>
+                        <i class="fas fa-university text-blue-500 text-lg"></i>
+                    </label>
+                    <label class="flex items-center gap-3 p-4 rounded-lg border border-surface-200 cursor-pointer
+                                  has-[:checked]:border-primary-400 has-[:checked]:bg-primary-50 transition-all">
+                        <input type="radio" name="payment_method" value="vnpay"
+                               class="w-4 h-4 text-primary-600">
+                        <div class="flex-1">
+                            <span class="font-medium text-surface-800">{% trans "Thanh toán VNPay" %}</span>
+                            <p class="text-xs text-surface-400 mt-0.5">{% trans "Thanh toán trực tuyến qua cổng VNPay" %}</p>
+                        </div>
+                        <i class="fas fa-credit-card text-blue-600 text-lg"></i>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Coupon & Note -->
+            <div class="card p-6">
+                <h2 class="font-display font-semibold text-surface-800 mb-4">
+                    <i class="fas fa-tag text-primary-500 mr-2"></i>{% trans "Mã giảm giá & Ghi chú" %}
+                </h2>
+                <div class="mb-4">
+                    <label class="form-label">{% trans "Mã giảm giá" %}</label>
+                    <input type="text" name="coupon_code" value="{{ form.coupon_code.value|default:'' }}"
+                           class="form-input" placeholder="{% trans 'Nhập mã giảm giá' %}">
+                </div>
+                <div>
+                    <label class="form-label">{% trans "Ghi chú đơn hàng" %}</label>
+                    <textarea name="note" rows="3" class="form-input"
+                              placeholder="{% trans 'Ví dụ: giao giờ hành chính, gọi trước khi giao...' %}">{{ form.note.value|default:'' }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Order Summary -->
+        <div class="lg:w-96">
+            <div class="card p-6 lg:sticky lg:top-28">
+                <h3 class="font-display font-semibold text-surface-800 mb-4">{% trans "Đơn hàng của bạn" %}</h3>
+
+                <!-- Items -->
+                <div class="space-y-3 max-h-64 overflow-y-auto mb-4">
+                    {% for item in items %}
+                    <div class="flex gap-3">
+                        {% if item.book.cover_image %}
+                        <img src="{{ item.book.cover_image.url }}" alt="{{ item.book.title }}"
+                             class="w-12 h-16 object-cover rounded">
+                        {% else %}
+                        <div class="w-12 h-16 bg-primary-50 rounded flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-book text-primary-300 text-sm"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-surface-800 line-clamp-2">{{ item.book.title }}</p>
+                            <p class="text-xs text-surface-400">x{{ item.quantity }}</p>
+                        </div>
+                        <span class="text-sm font-medium text-surface-800 whitespace-nowrap">{{ item.line_total|intcomma }}₫</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <hr class="border-surface-200 mb-4">
+
+                <!-- Totals -->
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-surface-500">{% trans "Tạm tính" %}</span>
+                        <span class="text-surface-800">{{ cart.subtotal|intcomma }}₫</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-surface-500">{% trans "Phí vận chuyển" %}</span>
+                        <span class="text-surface-800">
+                            {% if cart.subtotal >= 300000 %}
+                            <span class="text-emerald-600">{% trans "Miễn phí" %}</span>
+                            {% else %}
+                            30,000₫
+                            {% endif %}
+                        </span>
+                    </div>
+                    <hr class="border-surface-200">
+                    <div class="flex justify-between text-base pt-1">
+                        <span class="font-bold text-surface-800">{% trans "Tổng cộng" %}</span>
+                        <span class="font-bold text-accent-600 text-xl">
+                            {% if cart.subtotal >= 300000 %}
+                            {{ cart.subtotal|intcomma }}₫
+                            {% else %}
+                            {{ cart.subtotal|add:30000|intcomma }}₫
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary btn-lg w-full mt-6">
+                    <i class="fas fa-lock mr-2"></i> {% trans "Đặt hàng" %}
+                </button>
+
+                <p class="text-xs text-surface-400 text-center mt-3">
+                    <i class="fas fa-shield-alt mr-1"></i>
+                    {% trans "Thông tin của bạn được bảo mật" %}
+                </p>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('saved-address-select');
+    const fields = document.getElementById('new-address-fields');
+    if (select && fields) {
+        function toggleFields() {
+            if (select.value) {
+                fields.style.display = 'none';
+            } else {
+                fields.style.display = '';
+            }
+        }
+        select.addEventListener('change', toggleFields);
+        toggleFields();
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

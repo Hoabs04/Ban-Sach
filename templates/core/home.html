@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Trang chủ" %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="gradient-hero relative overflow-hidden">
+    <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-96 h-96 bg-accent-400 rounded-full blur-3xl"></div>
+    </div>
+    <div class="container-custom relative py-16 md:py-24">
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div class="text-white animate-slide-up">
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm
+                             text-sm border border-white/20 mb-4">
+                    <i class="fas fa-sparkles text-accent-300"></i>
+                    {% trans "Mới nhất 2024" %}
+                </span>
+                <h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4">
+                    {% trans "Khám phá thế giới" %}<br>
+                    <span class="text-accent-300">{% trans "qua trang sách" %}</span>
+                </h2>
+                <p class="text-lg text-blue-100 mb-8 max-w-md">
+                    {% trans "Hàng nghìn đầu sách chọn lọc từ các tác giả nổi tiếng. Miễn phí vận chuyển cho đơn hàng từ 300.000₫." %}
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{% url 'catalog:book_list' %}" class="btn-accent btn-lg">
+                        <i class="fas fa-book-reader mr-2"></i> {% trans "Khám phá ngay" %}
+                    </a>
+                    <a href="{% url 'core:about' %}" class="btn bg-white/10 text-white border border-white/20
+                                                            hover:bg-white/20 btn-lg backdrop-blur-sm">
+                        {% trans "Tìm hiểu thêm" %} <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="hidden md:flex justify-center animate-fade-in">
+                <div class="relative">
+                    <div class="w-80 h-96 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 p-6
+                                flex items-center justify-center transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                        <div class="text-center text-white">
+                            <i class="fas fa-book-open text-6xl mb-4 text-accent-300"></i>
+                            <p class="font-display text-2xl font-bold">{{ SITE_NAME }}</p>
+                            <p class="text-blue-200 text-sm mt-1">{{ SITE_TAGLINE }}</p>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-4 -right-4 w-24 h-24 rounded-xl bg-accent-500/80 backdrop-blur-sm
+                                flex items-center justify-center text-white font-bold text-lg
+                                animate-bounce-gentle shadow-xl">
+                        -20%
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Trust Badges -->
+<section class="bg-white border-b border-surface-100">
+    <div class="container-custom py-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="flex items-center gap-3 justify-center">
+                <i class="fas fa-truck-fast text-2xl text-primary-500"></i>
+                <div>
+                    <p class="font-medium text-sm text-surface-800">{% trans "Giao hàng nhanh" %}</p>
+                    <p class="text-xs text-surface-400">{% trans "Toàn quốc" %}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 justify-center">
+                <i class="fas fa-certificate text-2xl text-primary-500"></i>
+                <div>
+                    <p class="font-medium text-sm text-surface-800">{% trans "Sách chính hãng" %}</p>
+                    <p class="text-xs text-surface-400">{% trans "Cam kết 100%" %}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 justify-center">
+                <i class="fas fa-hand-holding-heart text-2xl text-primary-500"></i>
+                <div>
+                    <p class="font-medium text-sm text-surface-800">{% trans "Đổi trả miễn phí" %}</p>
+                    <p class="text-xs text-surface-400">{% trans "Trong 7 ngày" %}</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 justify-center">
+                <i class="fas fa-wallet text-2xl text-primary-500"></i>
+                <div>
+                    <p class="font-medium text-sm text-surface-800">{% trans "Thanh toán COD" %}</p>
+                    <p class="text-xs text-surface-400">{% trans "Nhận hàng trả tiền" %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+{% if categories %}
+<section class="container-custom py-12">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="section-title">{% trans "Danh mục sách" %}</h2>
+            <p class="section-subtitle">{% trans "Khám phá theo thể loại yêu thích" %}</p>
+        </div>
+        <a href="{% url 'catalog:book_list' %}" class="btn-secondary btn-sm hidden md:flex">
+            {% trans "Xem tất cả" %} <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        {% for category in categories %}
+        <a href="{% url 'catalog:category_detail' slug=category.slug %}"
+           class="group p-4 rounded-xl border border-surface-200/60 bg-white
+                  hover:border-primary-300 hover:shadow-md hover:shadow-primary-100/50
+                  transition-all duration-300 text-center">
+            {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                 class="w-12 h-12 mx-auto mb-3 rounded-lg object-cover">
+            {% else %}
+            <div class="w-12 h-12 mx-auto mb-3 rounded-lg bg-primary-50 flex items-center justify-center
+                        group-hover:bg-primary-100 transition-colors">
+                <i class="fas fa-layer-group text-primary-500 text-lg"></i>
+            </div>
+            {% endif %}
+            <h3 class="font-medium text-sm text-surface-700 group-hover:text-primary-600 transition-colors">
+                {{ category.name }}
+            </h3>
+            <p class="text-xs text-surface-400 mt-0.5">{{ category.book_count }} {% trans "sách" %}</p>
+        </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured Books -->
+{% if featured_books %}
+<section class="bg-surface-50 py-12">
+    <div class="container-custom">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-star text-accent-400 mr-2"></i>{% trans "Sách nổi bật" %}
+                </h2>
+                <p class="section-subtitle">{% trans "Được độc giả yêu thích nhất" %}</p>
+            </div>
+            <a href="{% url 'catalog:book_list' %}?sort=bestseller" class="btn-secondary btn-sm hidden md:flex">
+                {% trans "Xem thêm" %} <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+            {% for book in featured_books %}
+                {% include 'includes/book_card.html' with book=book %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- New Arrivals -->
+{% if new_books %}
+<section class="container-custom py-12">
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <h2 class="section-title">
+                <i class="fas fa-sparkles text-primary-400 mr-2"></i>{% trans "Sách mới" %}
+            </h2>
+            <p class="section-subtitle">{% trans "Vừa ra mắt, không thể bỏ lỡ" %}</p>
+        </div>
+        <a href="{% url 'catalog:book_list' %}?sort=newest" class="btn-secondary btn-sm hidden md:flex">
+            {% trans "Xem thêm" %} <i class="fas fa-arrow-right ml-2"></i>
+        </a>
+    </div>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+        {% for book in new_books %}
+            {% include 'includes/book_card.html' with book=book %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Bestsellers -->
+{% if bestsellers %}
+<section class="bg-surface-50 py-12">
+    <div class="container-custom">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="section-title">
+                    <i class="fas fa-fire text-red-400 mr-2"></i>{% trans "Bán chạy nhất" %}
+                </h2>
+                <p class="section-subtitle">{% trans "Top sách được mua nhiều nhất" %}</p>
+            </div>
+            <a href="{% url 'catalog:book_list' %}?sort=bestseller" class="btn-secondary btn-sm hidden md:flex">
+                {% trans "Xem thêm" %} <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+            {% for book in bestsellers %}
+                {% include 'includes/book_card.html' with book=book %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA / Newsletter -->
+<section class="container-custom py-12">
+    <div class="rounded-2xl gradient-hero p-8 md:p-12 text-center text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute -top-10 -left-10 w-64 h-64 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -right-10 w-64 h-64 bg-accent-400 rounded-full blur-3xl"></div>
+        </div>
+        <div class="relative">
+            <h2 class="font-display text-2xl md:text-3xl font-bold mb-3">
+                {% trans "Đăng ký nhận thông tin mới nhất" %}
+            </h2>
+            <p class="text-blue-100 mb-6 max-w-md mx-auto">
+                {% trans "Nhận thông báo về sách mới, khuyến mãi và ưu đãi đặc biệt ngay khi có." %}
+            </p>
+            <form method="post" action="{% url 'core:newsletter_subscribe' %}" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                {% csrf_token %}
+                <input type="email" name="email" required placeholder="{% trans 'Email của bạn' %}"
+                       class="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20
+                              text-white placeholder-blue-200 backdrop-blur-sm
+                              focus:outline-none focus:ring-2 focus:ring-white/30 focus:bg-white/20">
+                <button type="submit" class="btn-accent px-8 py-3 rounded-full">
+                    {% trans "Đăng ký" %}
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

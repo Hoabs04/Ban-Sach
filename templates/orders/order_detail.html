@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static i18n humanize bookstore_tags %}
+
+{% block title %}{% trans "Đơn hàng" %} #{{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <a href="{% url 'accounts:my_orders' %}" class="hover:text-primary-600">{% trans "Đơn hàng" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700">#{{ order.order_number }}</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="section-title">{% trans "Đơn hàng" %} #{{ order.order_number }}</h1>
+        {% if order.can_cancel %}
+        <form method="post" action="{% url 'orders:order_cancel' order_number=order.order_number %}">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger btn-sm"
+                    onclick="return confirm('{% trans 'Bạn có chắc muốn hủy đơn hàng này?' %}')">
+                <i class="fas fa-times mr-1"></i> {% trans "Hủy đơn" %}
+            </button>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- Status Timeline -->
+    <div class="card p-6 mb-6">
+        <div class="flex items-center justify-between overflow-x-auto pb-2">
+            {% with statuses="pending,confirmed,packing,shipping,delivered" %}
+            {% for s in statuses|split:"," %}
+            <div class="flex flex-col items-center min-w-0 flex-shrink-0 px-2">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center mb-2
+                            {% if order.status == s %}bg-primary-600 text-white
+                            {% elif forloop.counter <= order.status|length %}bg-primary-100 text-primary-600
+                            {% else %}bg-surface-100 text-surface-400{% endif %}">
+                    {% if s == 'pending' %}<i class="fas fa-clock"></i>
+                    {% elif s == 'confirmed' %}<i class="fas fa-check"></i>
+                    {% elif s == 'packing' %}<i class="fas fa-box"></i>
+                    {% elif s == 'shipping' %}<i class="fas fa-truck"></i>
+                    {% elif s == 'delivered' %}<i class="fas fa-check-double"></i>
+                    {% endif %}
+                </div>
+                <span class="text-xs text-center {% if order.status == s %}font-semibold text-primary-600{% else %}text-surface-400{% endif %}">
+                    {% if s == 'pending' %}{% trans "Chờ xác nhận" %}
+                    {% elif s == 'confirmed' %}{% trans "Đã xác nhận" %}
+                    {% elif s == 'packing' %}{% trans "Đang đóng gói" %}
+                    {% elif s == 'shipping' %}{% trans "Đang giao" %}
+                    {% elif s == 'delivered' %}{% trans "Đã giao" %}
+                    {% endif %}
+                </span>
+            </div>
+            {% if not forloop.last %}
+            <div class="flex-1 h-0.5 bg-surface-200 mx-1 mt-[-20px]"></div>
+            {% endif %}
+            {% endfor %}
+            {% endwith %}
+        </div>
+        {% if order.status == 'cancelled' %}
+        <div class="mt-4 p-3 rounded-lg bg-red-50 text-red-700 text-sm">
+            <i class="fas fa-times-circle mr-1"></i> {% trans "Đơn hàng đã bị hủy" %}
+            {% if order.cancelled_at %} - {{ order.cancelled_at|date:"d/m/Y H:i" }}{% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+        <!-- Order Info -->
+        <div class="card p-5">
+            <h3 class="font-semibold text-surface-800 mb-3">{% trans "Thông tin đơn hàng" %}</h3>
+            <div class="space-y-2 text-sm">
+                <p><span class="text-surface-400">{% trans "Ngày đặt:" %}</span> {{ order.created_at|date:"d/m/Y H:i" }}</p>
+                <p><span class="text-surface-400">{% trans "Thanh toán:" %}</span> {{ order.get_payment_method_display }}</p>
+                <p><span class="text-surface-400">{% trans "TT thanh toán:" %}</span>
+                    <span class="badge-{% if order.payment_status == 'paid' %}success{% elif order.payment_status == 'refunded' %}warning{% else %}danger{% endif %}">
+                        {{ order.get_payment_status_display }}
+                    </span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Shipping Info -->
+        <div class="card p-5">
+            <h3 class="font-semibold text-surface-800 mb-3">{% trans "Địa chỉ giao hàng" %}</h3>
+            <div class="text-sm space-y-1">
+                <p class="font-medium text-surface-800">{{ order.shipping_name }}</p>
+                <p class="text-surface-500">{{ order.shipping_phone }}</p>
+                <p class="text-surface-500">{{ order.full_shipping_address }}</p>
+            </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="card p-5">
+            <h3 class="font-semibold text-surface-800 mb-3">{% trans "Thanh toán" %}</h3>
+            <div class="space-y-1 text-sm">
+                <div class="flex justify-between"><span class="text-surface-400">{% trans "Tạm tính" %}</span><span>{{ order.subtotal|intcomma }}₫</span></div>
+                <div class="flex justify-between"><span class="text-surface-400">{% trans "Vận chuyển" %}</span><span>{{ order.shipping_fee|intcomma }}₫</span></div>
+                {% if order.discount_amount %}<div class="flex justify-between"><span class="text-surface-400">{% trans "Giảm giá" %}</span><span class="text-emerald-600">-{{ order.discount_amount|intcomma }}₫</span></div>{% endif %}
+                <hr class="border-surface-200">
+                <div class="flex justify-between font-bold"><span>{% trans "Tổng cộng" %}</span><span class="text-accent-600">{{ order.total|intcomma }}₫</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card mt-6 overflow-hidden">
+        <div class="p-5 border-b border-surface-100">
+            <h3 class="font-semibold text-surface-800">{% trans "Sản phẩm" %}</h3>
+        </div>
+        {% for item in order.items.all %}
+        <div class="flex items-center gap-4 p-5 border-b border-surface-50">
+            {% if item.book and item.book.cover_image %}
+            <img src="{{ item.book.cover_image.url }}" class="w-14 h-20 object-cover rounded">
+            {% else %}
+            <div class="w-14 h-20 bg-primary-50 rounded flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-book text-primary-300"></i>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+                <p class="font-medium text-surface-800">{{ item.book_title }}</p>
+                <p class="text-sm text-surface-400">{{ item.book_price|intcomma }}₫ x {{ item.quantity }}</p>
+            </div>
+            <span class="font-semibold text-surface-800">{{ item.line_total|intcomma }}₫</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

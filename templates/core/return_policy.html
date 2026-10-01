@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Chính sách đổi trả" %}{% endblock %}
+{% block content %}
+<div class="container-custom py-12"><div class="max-w-3xl mx-auto card p-8">
+    <h1 class="section-title mb-6">{% trans "Chính sách đổi trả" %}</h1>
+    <div class="prose prose-surface max-w-none text-surface-600 space-y-4">
+        <h3 class="font-semibold text-surface-800">{% trans "Điều kiện đổi trả" %}</h3>
+        <ul><li>{% trans "Sản phẩm bị lỗi do nhà sản xuất hoặc vận chuyển" %}</li>
+            <li>{% trans "Sản phẩm giao không đúng với đơn hàng" %}</li>
+            <li>{% trans "Sản phẩm còn nguyên seal, chưa qua sử dụng" %}</li></ul>
+        <h3 class="font-semibold text-surface-800">{% trans "Thời hạn" %}</h3>
+        <p>{% trans "Trong vòng 7 ngày kể từ ngày nhận hàng." %}</p>
+        <h3 class="font-semibold text-surface-800">{% trans "Quy trình đổi trả" %}</h3>
+        <ol><li>{% trans "Liên hệ hotline hoặc email để yêu cầu đổi trả" %}</li>
+            <li>{% trans "Gửi lại sản phẩm kèm hóa đơn" %}</li>
+            <li>{% trans "Nhận sản phẩm thay thế hoặc hoàn tiền trong 3-5 ngày" %}</li></ol>
+    </div>
+</div></div>
+{% endblock %}

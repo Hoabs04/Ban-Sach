@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Địa chỉ giao hàng" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <div class="flex items-center justify-between mb-8">
+        <h1 class="section-title">{% trans "Địa chỉ giao hàng" %}</h1>
+        <a href="{% url 'accounts:address_create' %}" class="btn-primary btn-sm">
+            <i class="fas fa-plus mr-2"></i>{% trans "Thêm địa chỉ" %}
+        </a>
+    </div>
+
+    {% if addresses %}
+    <div class="grid md:grid-cols-2 gap-4">
+        {% for addr in addresses %}
+        <div class="card p-5 {% if addr.is_default %}border-primary-300 bg-primary-50/30{% endif %}">
+            {% if addr.is_default %}
+            <span class="badge-primary mb-2">{% trans "Mặc định" %}</span>
+            {% endif %}
+            <p class="font-semibold text-surface-800">{{ addr.full_name }}</p>
+            <p class="text-sm text-surface-500">{{ addr.phone }}</p>
+            <p class="text-sm text-surface-500 mt-1">{{ addr }}</p>
+            <div class="flex gap-2 mt-3">
+                <a href="{% url 'accounts:address_edit' pk=addr.pk %}" class="btn-ghost btn-sm">
+                    <i class="fas fa-edit mr-1"></i>{% trans "Sửa" %}
+                </a>
+                <form method="post" action="{% url 'accounts:address_delete' pk=addr.pk %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-ghost btn-sm text-red-500"
+                            onclick="return confirm('{% trans 'Xóa địa chỉ này?' %}')">
+                        <i class="fas fa-trash mr-1"></i>{% trans "Xóa" %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-12 text-surface-400">
+        <i class="fas fa-map-marker-alt text-4xl mb-3"></i>
+        <p>{% trans "Chưa có địa chỉ nào." %}</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

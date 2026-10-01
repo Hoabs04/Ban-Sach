@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Chỉnh sửa hồ sơ" %}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <div class="max-w-lg mx-auto">
+        <h1 class="section-title mb-8">{% trans "Chỉnh sửa hồ sơ" %}</h1>
+        <div class="card p-6">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-4">
+                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type|default:'text' }}"
+                           name="{{ field.html_name }}"
+                           id="{{ field.id_for_label }}"
+                           value="{{ field.value|default:'' }}"
+                           class="form-input"
+                           {% if field.field.widget.attrs.placeholder %}placeholder="{{ field.field.widget.attrs.placeholder }}"{% endif %}>
+                    {% if field.errors %}<p class="form-error">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="flex gap-3 mt-6">
+                    <button type="submit" class="btn-primary">{% trans "Lưu thay đổi" %}</button>
+                    <a href="{% url 'accounts:profile' %}" class="btn-secondary">{% trans "Hủy" %}</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

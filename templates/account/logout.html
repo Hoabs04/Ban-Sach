@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Đăng xuất" %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[40vh] flex items-center justify-center py-12">
+    <div class="text-center">
+        <i class="fas fa-sign-out-alt text-4xl text-surface-300 mb-4"></i>
+        <h1 class="font-display text-2xl font-bold text-surface-900 mb-2">{% trans "Bạn đã đăng xuất" %}</h1>
+        <p class="text-surface-400 mb-6">{% trans "Hẹn gặp lại bạn!" %}</p>
+        <div class="flex gap-3 justify-center">
+            <a href="{% url 'core:home' %}" class="btn-primary">{% trans "Về trang chủ" %}</a>
+            <a href="{% url 'account_login' %}" class="btn-secondary">{% trans "Đăng nhập lại" %}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

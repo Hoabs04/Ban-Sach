@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Đăng ký" %}{% endblock %}
+
+{% block content %}
+<div class="min-h-[60vh] flex items-center justify-center py-12">
+    <div class="w-full max-w-md px-4">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 rounded-xl gradient-hero flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-book-open text-white text-2xl"></i>
+            </div>
+            <h1 class="font-display text-2xl font-bold text-surface-900">{% trans "Đăng ký tài khoản" %}</h1>
+            <p class="text-surface-400 mt-1">{% trans "Tạo tài khoản để bắt đầu mua sách" %}</p>
+        </div>
+
+        <div class="card p-6 md:p-8">
+            <form method="post" action="{% url 'account_signup' %}">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                <div class="alert-error mb-4 text-sm">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <div>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                            <p>{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="mb-4">
+                    <label class="form-label" for="id_username">{% trans "Tên đăng nhập" %}</label>
+                    <div class="relative">
+                        <i class="fas fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                        <input type="text" name="username" id="id_username"
+                               class="form-input pl-10" placeholder="username"
+                               value="{{ form.username.value|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="id_email">{% trans "Email" %}</label>
+                    <div class="relative">
+                        <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                        <input type="email" name="email" id="id_email"
+                               class="form-input pl-10" placeholder="email@example.com"
+                               value="{{ form.email.value|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label" for="id_password1">{% trans "Mật khẩu" %}</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                        <input type="password" name="password1" id="id_password1"
+                               class="form-input pl-10" placeholder="••••••••">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="form-label" for="id_password2">{% trans "Xác nhận mật khẩu" %}</label>
+                    <div class="relative">
+                        <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-surface-400"></i>
+                        <input type="password" name="password2" id="id_password2"
+                               class="form-input pl-10" placeholder="••••••••">
+                    </div>
+                </div>
+
+                {% if redirect_field_value %}
+                <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+                {% endif %}
+
+                <button type="submit" class="btn-primary btn-lg w-full">
+                    <i class="fas fa-user-plus mr-2"></i>{% trans "Đăng ký" %}
+                </button>
+            </form>
+        </div>
+
+        <p class="text-center text-sm text-surface-400 mt-6">
+            {% trans "Đã có tài khoản?" %}
+            <a href="{% url 'account_login' %}" class="text-primary-600 font-medium hover:underline">{% trans "Đăng nhập" %}</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

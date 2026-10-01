@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{% trans "Tìm kiếm" %}: {{ query }}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700">{% trans "Tìm kiếm" %}</span>
+    </nav>
+
+    <div class="mb-8">
+        <h1 class="section-title">
+            {% if query %}
+                {% trans "Kết quả tìm kiếm cho" %} "<span class="text-primary-600">{{ query }}</span>"
+            {% else %}
+                {% trans "Tìm kiếm sách" %}
+            {% endif %}
+        </h1>
+        <p class="section-subtitle">{{ books.paginator.count }} {% trans "kết quả" %}</p>
+    </div>
+
+    {% if books %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+        {% for book in books %}
+            {% include 'includes/book_card.html' with book=book %}
+        {% endfor %}
+    </div>
+    {% include 'includes/pagination.html' with page_obj=books %}
+    {% else %}
+    <div class="text-center py-16">
+        <i class="fas fa-search text-5xl text-surface-300 mb-4"></i>
+        <h3 class="font-display text-xl font-semibold text-surface-600 mb-2">{% trans "Không tìm thấy kết quả" %}</h3>
+        <p class="text-surface-400 mb-6">{% trans "Thử tìm kiếm với từ khóa khác." %}</p>
+        <a href="{% url 'catalog:book_list' %}" class="btn-primary">{% trans "Xem tất cả sách" %}</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

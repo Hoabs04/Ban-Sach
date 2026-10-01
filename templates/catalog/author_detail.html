@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}{{ author.name }}{% endblock %}
+
+{% block content %}
+<div class="container-custom py-8">
+    <nav class="flex items-center gap-2 text-sm text-surface-400 mb-6">
+        <a href="{% url 'core:home' %}" class="hover:text-primary-600">{% trans "Trang chủ" %}</a>
+        <i class="fas fa-chevron-right text-[10px]"></i>
+        <span class="text-surface-700">{{ author.name }}</span>
+    </nav>
+
+    <div class="flex items-start gap-6 mb-8">
+        {% if author.photo %}
+        <img src="{{ author.photo.url }}" alt="{{ author.name }}" class="w-24 h-24 rounded-xl object-cover">
+        {% else %}
+        <div class="w-24 h-24 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-user-edit text-2xl text-primary-500"></i>
+        </div>
+        {% endif %}
+        <div>
+            <h1 class="section-title">{{ author.name }}</h1>
+            {% if author.bio %}
+            <p class="text-surface-500 mt-2">{{ author.bio }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="font-display text-xl font-semibold text-surface-800 mb-6">{% trans "Sách của tác giả" %}</h2>
+
+    {% if books %}
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+        {% for book in books %}
+            {% include 'includes/book_card.html' with book=book %}
+        {% endfor %}
+    </div>
+    {% include 'includes/pagination.html' with page_obj=books %}
+    {% else %}
+    <p class="text-surface-500">{% trans "Chưa có sách nào." %}</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% load static i18n %}
+
+<footer class="bg-surface-900 text-surface-300 mt-16">
+    <!-- Main Footer -->
+    <div class="container-custom py-12 md:py-16">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+
+            <!-- Brand -->
+            <div class="lg:col-span-1">
+                <a href="{% url 'core:home' %}" class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl gradient-hero flex items-center justify-center">
+                        <i class="fas fa-book-open text-white"></i>
+                    </div>
+                    <span class="font-display font-bold text-xl text-white">{{ SITE_NAME }}</span>
+                </a>
+                <p class="text-sm text-surface-400 leading-relaxed mb-4">
+                    {% trans "Website bán sách và truyện trực tuyến hàng đầu. Chúng tôi cung cấp hàng nghìn đầu sách từ nhiều thể loại khác nhau." %}
+                </p>
+                <div class="flex gap-3">
+                    <a href="#" class="w-9 h-9 rounded-full bg-surface-800 flex items-center justify-center
+                                      hover:bg-primary-600 transition-colors duration-200">
+                        <i class="fab fa-facebook-f text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-surface-800 flex items-center justify-center
+                                      hover:bg-primary-600 transition-colors duration-200">
+                        <i class="fab fa-instagram text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-surface-800 flex items-center justify-center
+                                      hover:bg-primary-600 transition-colors duration-200">
+                        <i class="fab fa-youtube text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-surface-800 flex items-center justify-center
+                                      hover:bg-primary-600 transition-colors duration-200">
+                        <i class="fab fa-tiktok text-sm"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="font-display font-semibold text-white mb-4">{% trans "Liên kết nhanh" %}</h3>
+                <ul class="space-y-2.5">
+                    <li><a href="{% url 'catalog:book_list' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Danh sách sách" %}
+                    </a></li>
+                    <li><a href="{% url 'core:about' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Giới thiệu" %}
+                    </a></li>
+                    <li><a href="{% url 'core:contact' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Liên hệ" %}
+                    </a></li>
+                    {% if user.is_authenticated %}
+                    <li><a href="{% url 'accounts:my_orders' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Đơn hàng của tôi" %}
+                    </a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Policies -->
+            <div>
+                <h3 class="font-display font-semibold text-white mb-4">{% trans "Chính sách" %}</h3>
+                <ul class="space-y-2.5">
+                    <li><a href="{% url 'core:shipping_policy' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Chính sách giao hàng" %}
+                    </a></li>
+                    <li><a href="{% url 'core:return_policy' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Chính sách đổi trả" %}
+                    </a></li>
+                    <li><a href="{% url 'core:terms' %}" class="text-sm hover:text-white transition-colors flex items-center gap-2">
+                        <i class="fas fa-chevron-right text-[10px] text-primary-400"></i> {% trans "Điều khoản sử dụng" %}
+                    </a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h3 class="font-display font-semibold text-white mb-4">{% trans "Liên hệ" %}</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm">
+                        <i class="fas fa-map-marker-alt text-primary-400 mt-0.5"></i>
+                        <span>{% trans "123 Đường Nguyễn Huệ, Quận 1, TP.HCM" %}</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-sm">
+                        <i class="fas fa-phone-alt text-primary-400"></i>
+                        <span>{{ CONTACT_PHONE }}</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-sm">
+                        <i class="fas fa-envelope text-primary-400"></i>
+                        <span>{{ CONTACT_EMAIL }}</span>
+                    </li>
+                    <li class="flex items-center gap-3 text-sm">
+                        <i class="fas fa-clock text-primary-400"></i>
+                        <span>{% trans "T2 - T7: 8:00 - 21:00" %}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Bar -->
+    <div class="border-t border-surface-800">
+        <div class="container-custom py-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-surface-800 flex items-center justify-center">
+                        <i class="fas fa-shipping-fast text-primary-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white">{% trans "Miễn phí ship" %}</p>
+                        <p class="text-xs text-surface-400">{% trans "Đơn hàng từ 300K" %}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-surface-800 flex items-center justify-center">
+                        <i class="fas fa-undo text-primary-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white">{% trans "Đổi trả dễ dàng" %}</p>
+                        <p class="text-xs text-surface-400">{% trans "Trong 7 ngày" %}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-surface-800 flex items-center justify-center">
+                        <i class="fas fa-shield-alt text-primary-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white">{% trans "Sách chính hãng" %}</p>
+                        <p class="text-xs text-surface-400">{% trans "100% bản quyền" %}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-surface-800 flex items-center justify-center">
+                        <i class="fas fa-headset text-primary-400"></i>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-white">{% trans "Hỗ trợ 24/7" %}</p>
+                        <p class="text-xs text-surface-400">{% trans "Tư vấn miễn phí" %}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="border-t border-surface-800">
+        <div class="container-custom py-4 flex flex-col md:flex-row justify-between items-center gap-2">
+            <p class="text-xs text-surface-500">
+                &copy; {% now "Y" %} {{ SITE_NAME }}. {% trans "Tất cả quyền được bảo lưu." %}
+            </p>
+            <div class="flex items-center gap-4 text-xs text-surface-500">
+                <span><i class="fas fa-money-bill-wave mr-1"></i> COD</span>
+                <span><i class="fas fa-university mr-1"></i> {% trans "Chuyển khoản" %}</span>
+            </div>
+        </div>
+    </div>
+</footer>

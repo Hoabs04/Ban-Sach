@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Không tìm thấy trang" %} - 404{% endblock %}
+
+{% block content %}
+<div class="container-custom py-16 md:py-24 text-center">
+    <div class="max-w-md mx-auto">
+        <i class="fas fa-exclamation-triangle text-6xl text-accent-500 mb-6"></i>
+        <h1 class="text-4xl font-display font-bold mb-4">404</h1>
+        <h2 class="text-2xl font-semibold mb-4">{% trans "Không tìm thấy trang" %}</h2>
+        <p class="text-surface-600 mb-8">
+            {% trans "Trang bạn đang tìm kiếm có thể đã bị xóa, đổi tên hoặc tạm thời không thể truy cập." %}
+        </p>
+        <a href="{% url 'core:home' %}" class="btn-primary">
+            <i class="fas fa-home mr-2"></i> {% trans "Về trang chủ" %}
+        </a>
+    </div>
+</div>
+{% endblock %}

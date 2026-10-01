@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Giới thiệu" %}{% endblock %}
+{% block content %}
+<div class="container-custom py-12">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="section-title mb-8 text-center">{% trans "Về BookStore" %}</h1>
+        <div class="card p-8 prose prose-surface max-w-none">
+            <p class="text-lg text-surface-600 leading-relaxed">
+                {% trans "BookStore là website bán sách và truyện trực tuyến, với mục tiêu mang đến cho bạn đọc Việt Nam những cuốn sách chất lượng nhất, từ văn học, kinh tế, kỹ năng sống đến sách thiếu nhi." %}
+            </p>
+            <h2 class="font-display text-xl font-semibold text-surface-800 mt-8 mb-4">{% trans "Sứ mệnh" %}</h2>
+            <p class="text-surface-600">{% trans "Chúng tôi tin rằng sách có sức mạnh thay đổi cuộc sống. BookStore cam kết cung cấp sách chính hãng, giá cả hợp lý, và dịch vụ giao hàng nhanh chóng đến tay bạn đọc." %}</p>
+            <h2 class="font-display text-xl font-semibold text-surface-800 mt-8 mb-4">{% trans "Tại sao chọn BookStore?" %}</h2>
+            <ul class="space-y-2 text-surface-600">
+                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-emerald-500 mt-1"></i> {% trans "100% sách chính hãng, bản quyền" %}</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-emerald-500 mt-1"></i> {% trans "Miễn phí giao hàng cho đơn từ 300.000₫" %}</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-emerald-500 mt-1"></i> {% trans "Đổi trả dễ dàng trong 7 ngày" %}</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-emerald-500 mt-1"></i> {% trans "Hỗ trợ khách hàng 24/7" %}</li>
+                <li class="flex items-start gap-2"><i class="fas fa-check-circle text-emerald-500 mt-1"></i> {% trans "Thanh toán an toàn, tiện lợi" %}</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

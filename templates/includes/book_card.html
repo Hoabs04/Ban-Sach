@@ -1,0 +1,96 @@
+{% load static i18n humanize %}
+
+{# Reusable book card component. Usage: {% include 'includes/book_card.html' with book=book %} #}
+
+<div class="book-card animate-fade-in">
+    <a href="{{ book.get_absolute_url }}" class="block">
+        <!-- Image -->
+        <div class="book-image">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" loading="lazy">
+            {% else %}
+            <div class="w-full h-64 bg-gradient-to-br from-primary-100 to-primary-50 flex items-center justify-center">
+                <i class="fas fa-book text-4xl text-primary-300"></i>
+            </div>
+            {% endif %}
+
+            <!-- Badges -->
+            <div class="absolute top-3 left-3 flex flex-col gap-1.5">
+                {% if book.discount_percent %}
+                <span class="badge-discount">-{{ book.discount_percent }}%</span>
+                {% endif %}
+                {% if book.is_featured %}
+                <span class="badge bg-primary-500 text-white text-[10px]">
+                    <i class="fas fa-star mr-0.5"></i> {% trans "Nổi bật" %}
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Quick Add to Cart -->
+            {% if book.is_in_stock %}
+            <div class="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent
+                        opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <form method="post" action="{% url 'cart:cart_add' book.pk %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="quantity" value="1">
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <button type="submit" class="w-full py-2 rounded-lg bg-white/90 text-surface-800 text-sm font-medium
+                                                 hover:bg-white transition-colors">
+                        <i class="fas fa-cart-plus mr-1.5"></i> {% trans "Thêm vào giỏ" %}
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <div class="absolute bottom-0 left-0 right-0 p-3">
+                <span class="badge-danger w-full justify-center py-1.5">
+                    <i class="fas fa-times-circle mr-1"></i> {% trans "Hết hàng" %}
+                </span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="book-info">
+            <!-- Categories -->
+            {% if book.categories.all %}
+            <div class="flex flex-wrap gap-1 mb-1.5">
+                {% for cat in book.categories.all|slice:":2" %}
+                <span class="text-[10px] text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full">{{ cat.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Title -->
+            <h3 class="book-title text-sm">{{ book.title }}</h3>
+
+            <!-- Author -->
+            {% if book.authors_display %}
+            <p class="book-author">{{ book.authors_display }}</p>
+            {% endif %}
+
+            <!-- Rating -->
+            {% if book.review_count %}
+            <div class="flex items-center gap-1.5 mt-1.5">
+                <div class="star-rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= book.average_rating %}
+                        <i class="fas fa-star star-filled text-xs"></i>
+                        {% else %}
+                        <i class="fas fa-star star-empty text-xs"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <span class="text-xs text-surface-400">({{ book.review_count }})</span>
+            </div>
+            {% endif %}
+
+            <!-- Price -->
+            <div class="book-price mt-2">
+                <span class="price-current">{{ book.price|intcomma }}₫</span>
+                {% if book.original_price and book.original_price > book.price %}
+                <span class="price-original">{{ book.original_price|intcomma }}₫</span>
+                {% endif %}
+            </div>
+        </div>
+    </a>
+</div>

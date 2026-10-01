@@ -1,0 +1,292 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================
+   Custom Base Styles
+   ========================================== */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-sans text-surface-800 bg-surface-50 antialiased;
+  }
+}
+
+/* ==========================================
+   Component Styles
+   ========================================== */
+@layer components {
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl border border-surface-200/60
+           shadow-sm hover:shadow-md transition-shadow duration-300;
+  }
+
+  .card-glass {
+    @apply bg-white/70 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg;
+  }
+
+  /* Form inputs */
+  .form-input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-surface-300
+           bg-white text-surface-800 placeholder-surface-400
+           transition-all duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-surface-700 mb-1.5;
+  }
+
+  .form-error {
+    @apply text-red-500 text-xs mt-1;
+  }
+
+  /* Section Headers */
+  .section-title {
+    @apply font-display text-2xl md:text-3xl font-bold text-surface-900;
+  }
+
+  .section-subtitle {
+    @apply text-surface-500 mt-2;
+  }
+
+  /* Star Rating */
+  .star-rating {
+    @apply flex items-center gap-0.5;
+  }
+
+  .star-filled {
+    @apply text-amber-400;
+  }
+
+  .star-empty {
+    @apply text-surface-300;
+  }
+
+  /* Container */
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Price display */
+  .price-current {
+    @apply text-lg font-bold text-accent-600;
+  }
+
+  .price-original {
+    @apply text-sm text-surface-400 line-through;
+  }
+}
+
+/* ==========================================
+   Non-layer Custom Styles (avoid @apply circular issues)
+   ========================================== */
+
+/* Buttons */
+.btn {
+  @apply inline-flex items-center justify-center px-5 py-2.5 rounded-lg font-medium text-sm
+         transition-all duration-200 ease-in-out cursor-pointer
+         focus:outline-none focus:ring-2 focus:ring-offset-2
+         disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-primary {
+  @apply bg-primary-600 text-white
+         hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-600/25
+         focus:ring-primary-500 active:bg-primary-800;
+}
+
+.btn-secondary {
+  @apply bg-surface-100 text-surface-700 border border-surface-200
+         hover:bg-surface-200 hover:border-surface-300
+         focus:ring-surface-400;
+}
+
+.btn-accent {
+  @apply bg-accent-500 text-white
+         hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/25
+         focus:ring-accent-400 active:bg-accent-700;
+}
+
+.btn-danger {
+  @apply bg-red-500 text-white
+         hover:bg-red-600 focus:ring-red-400;
+}
+
+.btn-ghost {
+  @apply text-surface-600 hover:bg-surface-100 hover:text-surface-800;
+}
+
+.btn-sm {
+  @apply px-3 py-1.5 text-xs;
+}
+
+.btn-lg {
+  @apply px-8 py-3.5 text-base;
+}
+
+.btn-icon {
+  @apply p-2.5;
+}
+
+/* Badges */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-primary-100 text-primary-700;
+}
+
+.badge-success {
+  @apply bg-emerald-100 text-emerald-700;
+}
+
+.badge-warning {
+  @apply bg-amber-100 text-amber-700;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-700;
+}
+
+.badge-discount {
+  @apply bg-red-500 text-white font-bold;
+}
+
+/* Alerts */
+.alert {
+  @apply p-4 rounded-lg flex items-start gap-3;
+}
+
+.alert-success {
+  @apply bg-emerald-50 text-emerald-800 border border-emerald-200;
+}
+
+.alert-error {
+  @apply bg-red-50 text-red-800 border border-red-200;
+}
+
+.alert-warning {
+  @apply bg-amber-50 text-amber-800 border border-amber-200;
+}
+
+.alert-info {
+  @apply bg-blue-50 text-blue-800 border border-blue-200;
+}
+
+/* Book Card */
+.book-card {
+  @apply bg-white rounded-xl border border-surface-200/60 shadow-sm
+         hover:shadow-md transition-shadow duration-300 overflow-hidden;
+}
+
+.book-card .book-image {
+  @apply relative overflow-hidden bg-surface-100;
+}
+
+.book-card .book-image img {
+  @apply w-full h-64 object-cover transition-transform duration-500;
+}
+
+.book-card:hover .book-image img {
+  @apply scale-105;
+}
+
+.book-card .book-info {
+  @apply p-4;
+}
+
+.book-card .book-title {
+  @apply font-display font-semibold text-surface-800 transition-colors duration-200;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.book-card:hover .book-title {
+  @apply text-primary-600;
+}
+
+.book-card .book-author {
+  @apply text-sm text-surface-500 mt-1;
+}
+
+.book-card .book-price {
+  @apply mt-2 flex items-center gap-2;
+}
+
+/* Gradients */
+.gradient-hero {
+  background: linear-gradient(135deg, #072849 0%, #0c89e8 50%, #36a5f7 100%);
+}
+
+.gradient-accent {
+  background: linear-gradient(135deg, #f06006 0%, #ff9838 100%);
+}
+
+/* Utilities */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-500;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-surface-100;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-surface-300 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-surface-400;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+.animate-bounce-gentle {
+  animation: bounceGentle 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
